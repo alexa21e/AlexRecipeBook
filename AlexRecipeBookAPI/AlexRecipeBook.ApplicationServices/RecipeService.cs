@@ -33,5 +33,11 @@ namespace AlexRecipeBook.ApplicationServices
             return await _recipeRepository.GetRecipesCount(param.RecipeName, ingredients);
         }
 
+        public async Task<List<RecipeStatsToReturn>> GetMostComplexRecipes(int recipesNumber)
+        {
+            return await _recipeRepository.GetMostComplexRecipes(recipesNumber);
+        }
+
+
     }
 }

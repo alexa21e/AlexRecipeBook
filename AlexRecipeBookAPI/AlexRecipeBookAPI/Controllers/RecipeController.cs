@@ -19,5 +19,12 @@ namespace AlexRecipeBookAPI.Controllers
             var noRecipes = await _recipeService.GetRecipesCount(param);
             return Ok(new Pagination<HomeRecipeToReturn>(param.PageNumber, param.PageSize, noRecipes, param.SortOrder, recipes));
         }
+
+        [HttpGet("mostcomplex")]
+        public async Task<ActionResult<List<RecipeStatsToReturn>>> GetMostComplexRecipes([FromQuery] int recipesNumber)
+        {
+            var recipes = await _recipeService.GetMostComplexRecipes(recipesNumber);
+            return Ok(recipes);
+        }
     }
 }
