@@ -1,25 +1,23 @@
 ﻿using AlexRecipeBook.ApplicationServices.Abstractions;
 using AlexRecipeBook.DataObjects;
+using AlexRecipeBook.Domain.Specifications;
+using AlexRecipeBookAPI.Helpers;
 using Microsoft.AspNetCore.Mvc;
 
-namespace CulinaryRecipesAPI.Controllers
+namespace AlexRecipeBookAPI.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class RecipesController : ControllerBase
+    public class RecipesController(IRecipeService recipeService) : ControllerBase
     {
-        private readonly IRecipeService _recipeService;
-
-        public RecipesController(IRecipeService recipeService)
-        {
-            _recipeService = recipeService;
-        }
+        private readonly IRecipeService _recipeService = recipeService;
 
         [HttpGet]
-        public async Task<ActionResult<int>> GetRecipes()
+        public async Task<ActionResult<Pagination<HomeRecipeToReturn>>> GetRecipes([FromQuery] RecipeParam param)
         {
-            var recipes = await _recipeService.GetRecipes();
-            return Ok(recipes);
+            var recipes = await _recipeService.GetRecipes(param);
+            var noRecipes = await _recipeService.GetRecipesCount(param);
+            return Ok(new Pagination<HomeRecipeToReturn>(param.PageNumber, param.PageSize, noRecipes, param.SortOrder, recipes));
         }
     }
 }
