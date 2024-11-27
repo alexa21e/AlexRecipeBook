@@ -24,5 +24,11 @@ namespace AlexRecipeBookAPI.Controllers
             var noIngredients = await _ingredientService.GetNumberOfIngredients(param.Name);
             return Ok(new Listing<Ingredient>(param.IngredientsDisplayedNo, noIngredients, ingredients));
         }
+
+        [HttpGet("mostcommon")]
+        public async Task<ActionResult<List<Ingredient>>> GetMostCommonIngredients([FromQuery] int ingredientsNumber)
+        {
+            return await _ingredientService.GetMostCommonIngredients(ingredientsNumber);
+        }
     }
 }

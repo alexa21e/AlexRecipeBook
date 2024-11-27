@@ -7,5 +7,6 @@ namespace AlexRecipeBook.ApplicationServices.Abstractions
     {
         Task<List<Ingredient>> GetIngredients(IngredientParam param);
         Task<int> GetNumberOfIngredients(string name);
+        Task<List<Ingredient>> GetMostCommonIngredients(int ingredientsNumber);
     }
 }

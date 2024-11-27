@@ -18,5 +18,10 @@ namespace AlexRecipeBook.ApplicationServices
         {
             return await _ingredientRepository.GetNumberOfIngredients(name);
         }
+
+        public async Task<List<Ingredient>> GetMostCommonIngredients(int ingredientsNumber)
+        {
+            return await _ingredientRepository.GetMostCommonIngredients(ingredientsNumber);
+        }
     }
 }
