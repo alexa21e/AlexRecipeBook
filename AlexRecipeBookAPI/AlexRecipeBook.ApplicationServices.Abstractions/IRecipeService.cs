@@ -1,9 +1,12 @@
 ﻿using AlexRecipeBook.DataObjects;
+using AlexRecipeBook.Domain.Specifications;
 
 namespace AlexRecipeBook.ApplicationServices.Abstractions
 {
     public interface IRecipeService
     {
-        public Task<int> GetRecipes();
+        Task<List<HomeRecipeToReturn>> GetRecipes(RecipeParam param);
+        Task<int> GetRecipesCount(RecipeParam param);
+        Task<List<RecipeStatsToReturn>> GetMostComplexRecipes(int recipesNumber);
     }
 }
