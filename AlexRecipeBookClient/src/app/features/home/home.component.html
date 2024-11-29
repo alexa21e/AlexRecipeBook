@@ -1,0 +1,95 @@
+<ng-container *ngIf="isLoading; else content">
+    <div class="loading">
+        <div class="card flex justify-content-center">
+            <p-progressSpinner styleClass="w-8rem h-8rem" strokeWidth="3" fill="var(--surface-ground)"
+                animationDuration=".5s"></p-progressSpinner>
+        </div>
+    </div>
+</ng-container>
+<ng-template #content>
+    <div class="header flex justify-content-between flex-wrap">
+        <div class="flex align-items-center justify-content-center title">
+            <h1>Recipes</h1>
+        </div>
+        <div class="flex align-items-center justify-content-center search">
+            <span class="flex flex-column align-items-center gap-2">
+                <input pInputText type="text" placeholder="Search recipes by name" aria-describedby="search-help"
+                    [(ngModel)]="searchText" (input)="onRecipeSearchChange($event)"/>
+            </span>
+        </div>
+    </div>
+    <div class="flex flex-row">
+        <div class="flex flex-column gap-2 left-column" style="max-width: 20%">
+            <div *ngIf="ingredients" class="flex flex-column ingredients gap-2 align-items-center">
+                <p-listbox [options]="ingredients" [(ngModel)]="selectedIngredients" optionLabel="name"
+                    [style]="{ width: '100%', 'max-height': '320px' }" [virtualScroll]="true" [filter]="true"
+                    [virtualScrollItemSize]="55" [multiple]="true" [checkbox]="true" [showToggleAll]="false"
+                    [metaKeySelection]="false" (onChange)="onIngredientsChange($event)"
+                    (onFilter)="onIngredientsSearch($event)" aria-describedby="filter">
+                </p-listbox>
+                <small id="filter" style="display: inline-block; margin: 10px;">Search by name for more</small>
+                <div class="flex flex-row mb-2">
+                    <p-button size="small" (onClick)="onFilterRecipes()" class="mr-2">Filter by ingredients</p-button>
+                    <p-button size="small" (onClick)="onClearFilters()">Clear filter</p-button>
+                </div>
+            </div>
+            <div *ngIf="commonIngredients" class="stats">
+                <p-card>
+                    <h3>Most common ingredients</h3>
+                    <li *ngFor="let ingredient of commonIngredients">{{ingredient.name}}</li>
+                </p-card>
+            </div>
+            <div *ngIf="prolificAuthors" class="mt-2">
+                <p-card>
+                    <h3>Most prolific authors</h3>
+                    <div *ngFor="let author of prolificAuthors" class="stats-authors">
+                        <a (click)="onAuthorClickFromStats(author.name)">{{author.name}}</a>
+                    </div>
+                </p-card>
+            </div>
+            <div *ngIf="complexRecipes" class="mt-2">
+                <p-card>
+                    <h3>Most complex recipes</h3>
+                    <div *ngFor="let recipe of complexRecipes" class="stats-recipes">
+                        <a (click)="onRecipeClick(recipe.id)">{{recipe.name}}</a>
+                    </div>
+                </p-card>
+            </div>
+        </div>
+        <div class="flex flex-column justify-content-center main" style="max-width: 75%">
+            <div class="table align-items-center justify-content-center align-content-start" style="flex-grow: 1;">
+                <p-card *ngIf="recipes">
+                    <p-table [value]="recipes" [tableStyle]="{'min-width': '60rem'}" [paginator]="true"
+                        [totalRecords]="recipesCount" [rows]="20" [pageLinks]="5" [showPageLinks]="true" 
+                        [lazy]="true" (onLazyLoad)="onPageChange($event)" (onSort)="onSort($event)">
+                        <ng-template pTemplate="header">
+                            <tr>
+                                <th pSortableColumn="name">Name <p-sortIcon field="name"></p-sortIcon></th>
+                                <th>Author</th>
+                                <th pSortableColumn="numberOfIngredients">Number of ingredients <p-sortIcon
+                                        field="numberOfIngredients"></p-sortIcon></th>
+                                <th pSortableColumn="skillLevel">Skill level <p-sortIcon
+                                        field="skillLevel"></p-sortIcon>
+                                </th>
+                            </tr>
+                        </ng-template>
+                        <ng-template pTemplate="body" let-recipe>
+                            <tr class="clickable-row" (click)="onRecipeHover(recipe)">
+                                <td>{{recipe.name}}</td>
+                                <td style="text-align: center"><a (click)="onAuthorClickFromTable($event, recipe.author, recipe.id)">{{recipe.author}}</a>
+                                </td>
+                                <td style="text-align: center">{{recipe.numberOfIngredients}}</td>
+                                <td style="text-align: center">{{recipe.skillLevel}}</td>
+                            </tr>
+                        </ng-template>
+                        <ng-template pTemplate="summary">
+                            <div class="flex align-items-center justify-content-between">
+                                In total there are {{recipesCount}} recipes.
+                            </div>
+                        </ng-template>
+                    </p-table>
+                </p-card>
+            </div>
+        </div>
+    </div>
+</ng-template>

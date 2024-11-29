@@ -21,6 +21,17 @@ namespace AlexRecipeBookAPI.Extensions
 
             services.AddScoped<INeo4JDataAccess, Neo4JDataAccess>();
 
+            services.AddCors(options =>
+            {
+                options.AddPolicy(name: "AllowFrontEnd",
+                    policy =>
+                    {
+                        policy.WithOrigins("https://localhost:4200")
+                            .AllowAnyHeader()
+                            .AllowAnyMethod();
+                    });
+            });
+
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "CulinaryRecipes", Version = "v1" });

@@ -1,0 +1,119 @@
+.card {
+    border: 1px solid #f3e8c8;
+    padding: 2rem;
+    border-radius: 10px;
+    margin: 20px;
+}
+
+::ng-deep .p-datatable .p-datatable-thead > tr > th{
+    color: #592e2e ;
+}
+
+::ng-deep .p-paginator .p-paginator-pages .p-paginator-page.p-highlight{
+    color: #592e2e ;
+    background-color: #e5c4ab ;
+}
+
+.title{
+    margin-left: 3%;
+    color:#592e2e;
+}
+
+.ingredients {
+    margin-left: 2%;
+    margin-right: 2%;
+    margin-bottom: 2%;
+    display: flex;
+    align-items: center;
+    color: #592e2e;
+}
+
+.p-table {
+    border: 0.01rem solid #f3e8c8;
+    border-radius: 1rem;
+    text-align: center; 
+}
+
+.search {
+    color: #592e2e;
+    margin-right: 3%;
+}
+
+.sort {
+    display: flex;
+    align-items: center;
+}
+
+.search input {
+    width: 100%; 
+}
+
+.main {
+    flex-grow: 1; 
+    margin-right: 1.4%; 
+    margin-bottom: 2%;
+}
+
+.clickable-row:hover {
+    cursor: pointer;
+}
+
+.left-column{
+    width: 100%;
+    margin-left:1%;
+    margin-right:1%;
+}
+
+h3, li{
+    margin-left: 2%;
+}
+
+.stats-recipes{
+    color:#745252;
+    cursor: pointer;
+    margin: 1.8%;
+}
+
+.stats-authors{
+    color:#745252;
+    cursor: pointer;
+    margin: 1.8%;
+}
+
+.loading{
+    margin: 15%;
+}
+
+::ng-deep .p-button {
+    background-color: #592e2e;
+    border-color: #0b5345;
+}
+
+::ng-deep .p-card .p-card-content {
+    padding: 0.7rem 0;
+    color: #592e2e;
+}
+
+::ng-deep .p-card .p-card-body {
+    padding: 0.5rem;
+    color: #592e2e;
+}
+
+::ng-deep .p-datatable .p-datatable-thead > tr > th {
+    color: #592e2e;
+    text-align: center;
+}
+
+::ng-deep .p-paginator .p-paginator-pages .p-paginator-page.p-highlight {
+    color: 592e2e#592e2e;
+    background-color: #e5c4ab;
+}
+
+:host ::ng-deep .p-datatable .p-datatable-footer {
+    color: #592e2e;
+}
+
+:host ::ng-deep .p-progress-spinner-circle {
+    stroke: #592e2e !important;
+    background-color: #592e2e !important;
+ }
