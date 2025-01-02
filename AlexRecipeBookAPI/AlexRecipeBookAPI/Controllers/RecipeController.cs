@@ -40,5 +40,12 @@ namespace AlexRecipeBookAPI.Controllers
             var recipe = await _recipeService.GetRecipeNameById(id);
             return Ok(recipe);
         }
+
+        [HttpGet("{id}/similar")]
+        public async Task<ActionResult<List<SimilarRecipeToReturn>>> GetFiveMostSimilarRecipes([FromRoute] string id)
+        {
+            var recipes = await _recipeService.GetFiveMostSimilarRecipes(id);
+            return Ok(recipes);
+        }
     }
 }

@@ -182,6 +182,39 @@ namespace AlexRecipeBook.DataAccess
             return recipe;
         }
 
+        public async Task<List<SimilarRecipeToReturn>> GetFiveMostSimilarRecipes(string id)
+        {
+            var query = @"MATCH (r1:Recipe {id: $id})-[:CONTAINS_INGREDIENT|:KEYWORD|:DIET_TYPE|:COLLECTION]->(property)
+                          MATCH (r2:Recipe)-[:CONTAINS_INGREDIENT|:KEYWORD|:DIET_TYPE|:COLLECTION]->(property)
+                          WHERE r1 <> r2
+                          WITH r1, r2, COUNT(DISTINCT property) AS intersection
+                          WHERE intersection > 0
+                          MATCH (r1)-[:CONTAINS_INGREDIENT|:KEYWORD|:DIET_TYPE|:COLLECTION]->(p1)
+                          WITH r1, r2, intersection, COUNT(DISTINCT p1) AS totalPropertiesR1
+                          MATCH (r2)-[:CONTAINS_INGREDIENT|:KEYWORD|:DIET_TYPE|:COLLECTION]->(p2)
+                          WITH r1, r2, intersection, totalPropertiesR1, COUNT(DISTINCT p2) AS totalPropertiesR2
+                          WITH r1, r2, intersection, totalPropertiesR1 + totalPropertiesR2 - intersection AS union
+                          RETURN r2.id AS Id, r2.name AS Name, intersection, union
+                          ORDER BY (toFloat(intersection) / toFloat(union)) DESC
+                          LIMIT 5";
+
+            var parameters = new Dictionary<string, object>
+            {
+                { "id", id }
+            };
+
+            var records = await _neo4JDataAccess.ExecuteReadPropertiesAsync(query, parameters);
+
+            var similarRecipes = records.Select(record => new SimilarRecipeToReturn
+            {
+                Id = (string)record["Id"],
+                Name = (string)record["Name"],
+                Similarity = ((long)record["intersection"] / (double)(long)record["union"]) * 100
+            }).ToList();
+
+            return similarRecipes;
+        }
+
         private static string ParseSortOrder(string sortOrder)
         {
             var parts = sortOrder.Split('_');
