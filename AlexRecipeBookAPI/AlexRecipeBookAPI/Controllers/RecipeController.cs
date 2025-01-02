@@ -26,5 +26,12 @@ namespace AlexRecipeBookAPI.Controllers
             var recipes = await _recipeService.GetMostComplexRecipes(recipesNumber);
             return Ok(recipes);
         }
+
+        [HttpGet("{id}")]
+        public async Task<ActionResult<DetailedRecipeToReturn>> GetRecipeById([FromRoute] string id)
+        {
+            var recipe = await _recipeService.GetRecipeById(id);
+            return Ok(recipe);
+        }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using AlexRecipeBook.DataAccess.Abstractions;
 using AlexRecipeBook.DataObjects;
+using AlexRecipeBook.Domain;
 using Neo4j.Driver;
 
 namespace AlexRecipeBook.DataAccess
@@ -104,6 +105,56 @@ namespace AlexRecipeBook.DataAccess
             }).ToList();
 
             return recipes;
+        }
+
+        public async Task<DetailedRecipeToReturn> GetRecipeById(string id)
+        {
+            var query = @"MATCH (r:Recipe {id: $id}) - [:CONTAINS_INGREDIENT]->(i: Ingredient)  
+                          OPTIONAL MATCH (r) - [:COLLECTION]->(c: Collection)
+                          OPTIONAL MATCH (r) - [:KEYWORD]->(k: Keyword)
+                          OPTIONAL MATCH (r) - [:DIET_TYPE]->(d: DietType)
+                          RETURN r.id AS Id, r.name AS Name, r.description AS Description, r.preparationTime AS PreparationTime, 
+                                        r.cookingTime AS CookingTime, r.skillLevel AS SkillLevel, collect(DISTINCT i) AS Ingredients,
+                                        collect(DISTINCT c) AS Collections, collect(DISTINCT k) AS Keywords, collect(DISTINCT d) AS DietTypes";
+
+            var parameters = new Dictionary<string, object>
+            {
+                { "id", id }
+            };
+
+            var record = await _neo4JDataAccess.ExecuteReadSingleRecordAsync(query, parameters);
+
+            if (record.Count == 0)
+            {
+                return null;
+            }
+
+            var ingredientsAsNodes = record["Ingredients"].As<ICollection<INode>>();
+            var collectionsAsNodes = record["Collections"].As<ICollection<INode>>();
+            var keywordsAsNodes = record["Keywords"].As<ICollection<INode>>();
+            var dietAsNode = record["DietTypes"].As<ICollection<INode>>();
+
+            var ingredients = ingredientsAsNodes.Select(node => node.Properties["name"].ToString()).ToList();
+            var collections = collectionsAsNodes.Select(node => node.Properties["name"].ToString()).ToList();
+            var keywords = keywordsAsNodes.Select(node => node.Properties["name"].ToString()).ToList();
+            var diets = dietAsNode.Select(node => node.Properties["name"].ToString()).ToList(); ;
+
+            var recipe = new DetailedRecipeToReturn()
+            {
+                Recipe = Recipe.Create(
+                    (string)record["Id"],
+                    (string)record["Name"],
+                    (string)record["Description"],
+                    (long)record["PreparationTime"],
+                    (long)record["CookingTime"],
+                    (string)record["SkillLevel"]),
+                Ingredients = ingredients,
+                Collections = collections,
+                Keywords = keywords,
+                DietTypes = diets
+            };
+
+            return recipe;
         }
 
         private static string ParseSortOrder(string sortOrder)
