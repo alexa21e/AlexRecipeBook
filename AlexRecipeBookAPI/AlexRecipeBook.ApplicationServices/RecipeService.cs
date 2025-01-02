@@ -43,5 +43,9 @@ namespace AlexRecipeBook.ApplicationServices
             return await _recipeRepository.GetRecipeById(id);
         }
 
+        public async Task<RecipeNameToReturn> GetRecipeNameById(string id)
+        {
+            return await _recipeRepository.GetRecipeNameById(id);
+        }
     }
 }
