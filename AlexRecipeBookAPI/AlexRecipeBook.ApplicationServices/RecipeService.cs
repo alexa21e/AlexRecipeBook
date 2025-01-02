@@ -38,6 +38,19 @@ namespace AlexRecipeBook.ApplicationServices
             return await _recipeRepository.GetMostComplexRecipes(recipesNumber);
         }
 
+        public async Task<DetailedRecipeToReturn> GetRecipeById(string id)
+        {
+            return await _recipeRepository.GetRecipeById(id);
+        }
 
+        public async Task<RecipeNameToReturn> GetRecipeNameById(string id)
+        {
+            return await _recipeRepository.GetRecipeNameById(id);
+        }
+
+        public async Task<List<SimilarRecipeToReturn>> GetFiveMostSimilarRecipes(string id)
+        {
+            return await _recipeRepository.GetFiveMostSimilarRecipes(id);
+        }
     }
 }

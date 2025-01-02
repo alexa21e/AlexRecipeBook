@@ -8,5 +8,8 @@ namespace AlexRecipeBook.ApplicationServices.Abstractions
         Task<List<HomeRecipeToReturn>> GetRecipes(RecipeParam param);
         Task<int> GetRecipesCount(RecipeParam param);
         Task<List<RecipeStatsToReturn>> GetMostComplexRecipes(int recipesNumber);
+        Task<DetailedRecipeToReturn> GetRecipeById(string id);
+        Task<RecipeNameToReturn> GetRecipeNameById(string id);
+        Task<List<SimilarRecipeToReturn>> GetFiveMostSimilarRecipes(string id);
     }
 }
