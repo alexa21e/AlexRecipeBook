@@ -1,1 +1,75 @@
-<p>recipe works!</p>
+<div *ngIf="isLoading" class="loading">
+    <div class="card flex justify-content-center">
+        <p-progressSpinner styleClass="w-8rem h-8rem" strokeWidth="3" fill="var(--surface-ground)" animationDuration=".5s"></p-progressSpinner>
+    </div>
+</div>
+<div *ngIf="!isLoading">
+    <div class="card" *ngIf="recipeDetails">
+        <p-card>
+            <h1>{{recipeDetails.recipe.name}}</h1>
+            <p-divider></p-divider>
+            <p-fieldset legend="Description">
+                {{recipeDetails.recipe.description}}
+            </p-fieldset>
+            <div class="mt-2">
+                <p-fieldset legend="Ingredients">
+                    <div class="ingredients-grid">
+                        <li *ngFor="let ingredient of recipeDetails.ingredients">
+                          {{ ingredient }}
+                        </li>
+                      </div>
+                </p-fieldset>
+            </div>
+            <div class="flex flex-wrap" style="max-width: 100%">
+                <div class="flex-1 m-2 border-round">
+                    <p-fieldset legend="Similar recipes">
+                            <div *ngFor="let recipe of similarRecipes">
+                                <a (click)="onSimilarRecipeClick(recipe.id)" class="sim-recipes">{{recipe.name}}</a>
+                            with {{recipe.similarity.toFixed(2)}} % similarity
+                            </div>
+                    </p-fieldset>
+                </div>
+                <div class="flex-1 flex flex-column m-2 border-round align-content-center">
+                    <p-fieldset legend="Preparation Time">
+                        {{recipeDetails.recipe.preparationTime/60}} minutes
+                    </p-fieldset>
+                    <p-fieldset legend="Cooking Time" class="mt-2">
+                        {{recipeDetails.recipe.cookingTime/60}} minutes
+                    </p-fieldset>
+                </div>
+            </div>
+            <div class="flex flex-wrap" style="max-width: 100%">
+                <div class="flex-1 m-2 border-round">
+                    <p-fieldset legend="Collections">
+                        <ul *ngIf="recipeDetails.collections.length; else noCollections">
+                            <li *ngFor="let collection of recipeDetails.collections">{{collection}}</li>
+                        </ul>
+                        <ng-template #noCollections>
+                            <p>The recipe is not part of any collection</p>
+                        </ng-template>
+                    </p-fieldset>
+                </div>
+                <div class="flex-1 m-2 border-round">
+                    <p-fieldset legend="Keywords">
+                        <ul *ngIf="recipeDetails.keywords.length; else noKeywords">
+                            <li *ngFor="let keyword of recipeDetails.keywords">{{keyword}}</li>
+                        </ul>
+                        <ng-template #noKeywords>
+                            <p>0 keywords associated to this recipe</p>
+                        </ng-template>
+                    </p-fieldset>
+                </div>
+                <div class="flex-1 m-2 border-round">
+                    <p-fieldset legend="DietTypes">
+                        <ul *ngIf="recipeDetails.dietTypes.length; else noDietTypes">
+                            <li *ngFor="let dietType of recipeDetails.dietTypes">{{dietType}}</li>
+                        </ul>
+                        <ng-template #noDietTypes>
+                            <p>The recipe is not associated to any diet type</p>
+                        </ng-template>
+                    </p-fieldset>
+                </div>
+            </div>
+        </p-card>
+    </div>
+</div>
