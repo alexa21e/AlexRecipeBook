@@ -5,6 +5,9 @@ import { Pagination } from "../models/pagination";
 import { HomeRecipe } from "../models/homeRecipe";
 import { environment } from "../../../environments/environment";
 import { RecipeStats } from "../models/recipeStats";
+import { DetailedRecipe } from "../models/detailedRecipe";
+import { SimilarRecipe } from "../models/similarRecipe";
+import { RecipeName } from "../models/recipeName";
 
 @Injectable({
     providedIn: 'root'
@@ -33,5 +36,17 @@ export class RecipesService {
         let params = new HttpParams();
         params = params.append('recipesNumber', recipesNumber);
         return this.http.get<RecipeStats[]>(this.baseUrl + '/Recipes/mostComplex', {params});
+    }
+
+    getRecipe(id: string){
+        return this.http.get<DetailedRecipe>(this.baseUrl + '/Recipes/' + id);
+    }
+
+    getFiveMostSimilarRecipes(id: string){
+        return this.http.get<SimilarRecipe[]>(this.baseUrl + '/Recipes/' + id + '/similar');
+    }
+
+    getRecipeNameById(id: string){
+        return this.http.get<RecipeName>(this.baseUrl + '/Recipes/' + id + '/name');
     }
 }
