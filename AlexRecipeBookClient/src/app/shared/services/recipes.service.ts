@@ -8,6 +8,7 @@ import { RecipeStats } from "../models/recipeStats";
 import { DetailedRecipe } from "../models/detailedRecipe";
 import { SimilarRecipe } from "../models/similarRecipe";
 import { RecipeName } from "../models/recipeName";
+import { AuthorRecipeParams } from "../models/authorRecipeParams";
 
 @Injectable({
     providedIn: 'root'
@@ -48,5 +49,24 @@ export class RecipesService {
 
     getRecipeNameById(id: string){
         return this.http.get<RecipeName>(this.baseUrl + '/Recipes/' + id + '/name');
+    }
+
+    getRecipesByAuthor(recipeParams: AuthorRecipeParams){
+        let params = new HttpParams();
+        params = params.append('pageNumber', recipeParams.pageNumber);
+        params = params.append('pageSize', recipeParams.pageSize);
+        params = params.append('sortOrder', recipeParams.sortOrder);
+        params = params.append('authorName', recipeParams.authorName);
+        if(recipeParams.clickedRecipe && recipeParams.clickedRecipeId){
+            params = params.append('clickedRecipe', recipeParams.clickedRecipe);
+            params = params.append('clickedRecipeId', recipeParams.clickedRecipeId);
+        }
+        if(recipeParams.recipeName){
+            params = params.append('recipeName', recipeParams.recipeName);
+        }
+        if(recipeParams.selectedIngredients){
+            params = params.append('selectedIngredients', recipeParams.selectedIngredients);
+        }
+        return this.http.get<Pagination<HomeRecipe[]>>(this.baseUrl + '/Recipes/author', {params});
     }
 }
