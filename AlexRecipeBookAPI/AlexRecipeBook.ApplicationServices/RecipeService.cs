@@ -52,5 +52,44 @@ namespace AlexRecipeBook.ApplicationServices
         {
             return await _recipeRepository.GetFiveMostSimilarRecipes(id);
         }
+
+        public async Task<List<HomeRecipeToReturn>> GetRecipesByAuthor(AuthorRecipeParameters param)
+        {
+            var skip = (param.PageNumber - 1) * param.PageSize;
+
+            string[] ingredients = [];
+            if (!string.IsNullOrEmpty(param.SelectedIngredients))
+            {
+                ingredients = param.SelectedIngredients.Split(',');
+            }
+
+            var recipes = await _recipeRepository.GetRecipesByAuthor(skip, param.PageSize, param.SortOrder,
+                param.AuthorName, param.RecipeName, ingredients);
+
+            if (param.ClickedRecipe)
+            {
+                recipes.RemoveAll(r => r.Id == param.ClickedRecipeId);
+            }
+
+            return recipes;
+        }
+
+        public async Task<int> GetRecipesByAuthorCount(AuthorRecipeParameters param)
+        {
+            string[] ingredients = [];
+            if (!string.IsNullOrEmpty(param.SelectedIngredients))
+            {
+                ingredients = param.SelectedIngredients.Split(',');
+            }
+
+            var recipesNumber = await _recipeRepository.GetRecipesByAuthorCount(param.AuthorName, param.RecipeName, ingredients);
+
+            if (param.ClickedRecipe)
+            {
+                recipesNumber--;
+            }
+
+            return recipesNumber;
+        }
     }
 }

@@ -47,5 +47,13 @@ namespace AlexRecipeBookAPI.Controllers
             var recipes = await _recipeService.GetFiveMostSimilarRecipes(id);
             return Ok(recipes);
         }
+
+        [HttpGet("author")]
+        public async Task<ActionResult<Pagination<HomeRecipeToReturn>>> GetRecipesByAuthor([FromQuery] AuthorRecipeParameters param)
+        {
+            var recipes = await _recipeService.GetRecipesByAuthor(param);
+            var noRecipes = await _recipeService.GetRecipesByAuthorCount(param);
+            return Ok(new Pagination<HomeRecipeToReturn>(param.PageNumber, param.PageSize, noRecipes, param.SortOrder, recipes));
+        }
     }
 }

@@ -215,6 +215,100 @@ namespace AlexRecipeBook.DataAccess
             return similarRecipes;
         }
 
+        public async Task<List<HomeRecipeToReturn>> GetRecipesByAuthor(int skip, int pageSize, string sortOrder, string authorName,
+           string? recipeName, string[]? selectedIngredients)
+        {
+            var parameters = new Dictionary<string, object>
+            {
+                { "authorName", authorName },
+                { "skip", skip },
+                { "pageSize", pageSize }
+            };
+
+            var whereClauses = new List<string>
+            {
+                "a.name = $authorName"
+            };
+
+            var matchClauses = new List<string>();
+
+            if (!string.IsNullOrEmpty(recipeName))
+            {
+                whereClauses.Add("toLower(r.name) CONTAINS toLower($recipeName)");
+                parameters.Add("recipeName", recipeName);
+            }
+
+            if (selectedIngredients is { Length: > 0 })
+            {
+                for (var i = 0; i < selectedIngredients.Length; i++)
+                {
+                    matchClauses.Add($"MATCH (r)-[:CONTAINS_INGREDIENT]->(:Ingredient {{name: $ingredient{i}}})");
+                    parameters.Add($"ingredient{i}", selectedIngredients[i]);
+                }
+            }
+
+            var query = $@"MATCH (r:Recipe)-[:CONTAINS_INGREDIENT]->(i:Ingredient), (a:Author)-[:WROTE]->(r)
+                           WHERE {string.Join(" AND ", whereClauses)}
+                           {string.Join(" ", matchClauses)}
+                           RETURN r.id AS Id, r.name AS Name, a.name AS Author, count(i) AS NumberOfIngredients, r.skillLevel AS SkillLevel
+                           {ParseSortOrder(sortOrder)}
+                           SKIP $skip
+                           LIMIT $pageSize";
+
+            var records = await _neo4JDataAccess.ExecuteReadPropertiesAsync(query, parameters);
+
+            var recipes = records.Select(record => new HomeRecipeToReturn
+            {
+                Id = record["Id"].As<string>(),
+                Name = record["Name"].As<string>(),
+                Author = record["Author"].As<string>(),
+                NumberOfIngredients = record["NumberOfIngredients"].As<int>(),
+                SkillLevel = record["SkillLevel"].As<string>()
+            }).ToList();
+
+            return recipes;
+        }
+
+        public async Task<int> GetRecipesByAuthorCount(string authorName, string? recipeName,
+            string[]? selectedIngredients)
+        {
+            var parameters = new Dictionary<string, object>
+            {
+                { "authorName", authorName }
+            };
+
+            var whereClauses = new List<string>
+            {
+                "a.name = $authorName"
+            };
+
+            var matchClauses = new List<string>();
+
+            if (!string.IsNullOrEmpty(recipeName))
+            {
+                whereClauses.Add("toLower(r.name) CONTAINS toLower($recipeName)");
+                parameters.Add("recipeName", recipeName);
+            }
+
+            if (selectedIngredients is { Length: > 0 })
+            {
+                for (var i = 0; i < selectedIngredients.Length; i++)
+                {
+                    matchClauses.Add($"MATCH (r)-[:CONTAINS_INGREDIENT]->(:Ingredient {{name: $ingredient{i}}})");
+                    parameters.Add($"ingredient{i}", selectedIngredients[i]);
+                }
+            }
+
+            var query = $@"MATCH (r:Recipe)-[:CONTAINS_INGREDIENT]->(i:Ingredient), (a:Author)-[:WROTE]->(r)
+                                   WHERE {string.Join(" AND ", whereClauses)}
+                                   {string.Join(" ", matchClauses)}
+                                   RETURN count(DISTINCT r)";
+
+            var numberOfRecipes = await _neo4JDataAccess.ExecuteReadScalarAsync<int>(query, parameters);
+
+            return numberOfRecipes;
+        }
+
         private static string ParseSortOrder(string sortOrder)
         {
             var parts = sortOrder.Split('_');
