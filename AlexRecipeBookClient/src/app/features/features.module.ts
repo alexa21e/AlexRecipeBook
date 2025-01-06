@@ -6,6 +6,7 @@ import { RouterModule } from '@angular/router';
 import { SharedModule } from '../shared/shared.module';
 import { HomeComponent } from './home/home.component';
 import { RecipeComponent } from './recipe/recipe.component';
+import { AuthorComponent } from './author/author.component';
 
 import { DataViewModule } from 'primeng/dataview';
 import { TableModule } from 'primeng/table';
@@ -20,7 +21,8 @@ import { ProgressSpinnerModule } from 'primeng/progressspinner';
 @NgModule({
   declarations: [
     HomeComponent,
-    RecipeComponent
+    RecipeComponent,
+    AuthorComponent
   ],
   imports: [
     CommonModule,
